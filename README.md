@@ -21,7 +21,7 @@
 
 # Model building
 # Feature Extraction Technique 
- Images: ![Count Vectorizer and TFidVectorizer](image.png) .
+ Images: ![Count Vectorizer and TFidVectorizer](https://miro.medium.com/v2/resize:fit:852/1*TW1oTmO5tKMR1QRv7YoPKg.png) .
  Resources:  Links: [Learn about Count Vectorizer]( https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html) 
 
 **Cosine Similarity**
