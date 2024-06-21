@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recommendations</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+</head>
+
+<body>
+  <div class="container mt-5">
+    <div class="row">
+      <div class="col-md-8 mx-auto">
+        <h1 class="text-center mb-4 display-4 text-white">Top 3 Recommendations</h1>
+        <p class="text-center text-white ">Click on the links below to find your next course:</p>
+        <div class=" mb-4">
+            <p class="text-white"><strong>Your Skills:</strong> <span id="userskill">{{ user_skills }}</span></p>
+            <span class="text-white"><strong>Learning Goals:</strong><span id="usergoal"></span> {{ learning_goals }}</span></p>
+        </div>
+        <h4 class="text-white course-heading">Recommended Cources</h4>
+        <ul class="list-group mb-4">
+          {% for recommendation in recommendations %}
+          <li class="list-group-item d-flex flex-column">
+            <div id="link{{ loop.index }}">
+              <a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">{{ recommendation[0] }}</a>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        <div class="ai-response mt-4 p-3 border rounded">
+            <div class="d-flex">
+                <div class="flex-grow-1"><h5 class="text-white course-heading">Follow this Roadmap</h5></div>
+                <div><span class="text-white p-2">(dont like? we have more for you) </span><button id="regenerate" class="btn- btn-secondary- btn-sm btn-ai btn-grad"><img src="../static/icon.png" width="16" alt=""> <span id="regtext">Regenerate</span></button></div>
+                <div></div>
+            </div>
+          
+          <textarea class="form-control mt-2" id="roadmap" rows="8">{{ ai_response }}</textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Course Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <iframe id="courseFrame" style="width: 100%; height: 500px; border: none;"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  
+  <script>
+    {% for recommendation in recommendations %}
+    document.getElementById('link{{ loop.index }}').addEventListener('click', function() {
+ 
+      var url = '{{ recommendation[1] }}';
+      
+      document.getElementById('courseFrame').src = url;
+    });
+    {% endfor %}
+
+
+    document.getElementById('regenerate').addEventListener('click', function() {
+    const userSkill = document.getElementById('userskill');
+    const userGoal = document.getElementById('usergoal');
+    const userSkillText = userSkill.textContent;
+    const userGoalText = userGoal.textContent;
+    const regBtn = document.getElementById('regtext');
+    regBtn.textContent = "Loading ...";
+
+    const prompt = `act as you are are professional teck expert and have broad knowledge of different tech domains for providing a very impactfull roadmap for learning so as i have this skill ${userSkillText} and my goal is to do ${userGoalText}. answer should be concise and provide a proper roadmap in bullet points with time frame that how much time require to learn this skill and what are prequisits for this.`;
+    
+    fetch('https://api.openai.com/v1/engines/gpt-3.5-turbo-instruct/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer  Your api key here'
+      }, 
+      body: JSON.stringify({
+        prompt: prompt,
+        max_tokens: 100, 
+        temperature: 0.7 
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+        regBtn.textContent = "Regenerate";
+      document.getElementById('roadmap').value = data.choices[0].text.trim();
+    })
+    .catch(error => console.error('Error:', error));
+  });
+  </script>
+
+</body>
+
+</html>
