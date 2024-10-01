@@ -4,7 +4,11 @@ import numpy as np
 import pandas as pd  
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import openai 
+import openai  
+openai.api_key = 'YOUR API KEY HERE'
+                                 
+# Initialize Flask app
+app = Flask(__name__) 
 
 # Load dataset from CSV
 data_path = r"C:\Users\12\Documents\Career Project fullfledg\course titles.csv"  # Replace this with the path to your CSV file
@@ -41,10 +45,6 @@ def recommend_resources(user_skills, learning_goals):
 
     return top_recommendations[['course_title', 'url']].values.tolist()
 
-    # return top_recommendations[['course_title', 'url']].values.tolist(), user_skills, learning_goals
-    #return top_recommendations[['course_title', 'url']].values.tolist()
-
-
 # Define routes
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -66,7 +66,7 @@ def index():
             prompt=prompt,
             max_tokens=60
         )
-        
+       
         ai_response = response.choices[0].text.strip()
         
         return render_template("recommendation.html", recommendations=recommendations, 
@@ -75,7 +75,8 @@ def index():
                                ai_response=ai_response)
     else:
         return render_template("index.html")
+    
 
-  # Run the app
+# Run the app
 if __name__ == "__main__":
     app.run(debug=True)
