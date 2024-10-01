@@ -5,7 +5,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 # Load your dataset from CSV
-data_path = r"  Your CSV here"  # Replace this with the path to your CSV file
+data_path = r"C:\Users\12\Documents\Career Project fullfledg\course titles.csv"  # Replace this with the path to your CSV file
 df = pd.read_csv(data_path)
 
 # extract course titles and skills column from the dataframe 
